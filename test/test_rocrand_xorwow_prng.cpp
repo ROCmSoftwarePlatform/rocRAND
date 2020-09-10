@@ -18,8 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <stdio.h>
 #include <gtest/gtest.h>
+#include <stdio.h>
 
 #include <hip/hip_runtime.h>
 #include <rocrand.h>
@@ -63,8 +63,8 @@ TEST(rocrand_xorwow_prng_tests, init_test)
 
 TEST(rocrand_xorwow_prng_tests, uniform_uint_test)
 {
-    const size_t size = 1313;
-    unsigned int * data;
+    const size_t  size = 1313;
+    unsigned int* data;
     HIP_CHECK(hipMalloc(&data, sizeof(unsigned int) * size));
 
     rocrand_xorwow g;
@@ -89,7 +89,7 @@ TEST(rocrand_xorwow_prng_tests, uniform_uint_test)
 TEST(rocrand_xorwow_prng_tests, uniform_float_test)
 {
     const size_t size = 1313;
-    float * data;
+    float*       data;
     hipMalloc(&data, sizeof(float) * size);
 
     rocrand_xorwow g;
@@ -118,8 +118,8 @@ TEST(rocrand_xorwow_prng_tests, uniform_float_test)
 TEST(rocrand_xorwow_prng_tests, state_progress_test)
 {
     // Device data
-    const size_t size = 1025;
-    unsigned int * data;
+    const size_t  size = 1025;
+    unsigned int* data;
     HIP_CHECK(hipMalloc(&data, sizeof(unsigned int) * size));
 
     // Generator
@@ -144,7 +144,8 @@ TEST(rocrand_xorwow_prng_tests, state_progress_test)
     size_t same = 0;
     for(size_t i = 0; i < size; i++)
     {
-        if(host_data1[i] == host_data2[i]) same++;
+        if(host_data1[i] == host_data2[i])
+            same++;
     }
     // It may happen that numbers are the same, so we
     // just make sure that most of them are different.
@@ -160,8 +161,8 @@ TEST(rocrand_xorwow_prng_tests, same_seed_test)
     const unsigned long long seed = 0xdeadbeefdeadbeefULL;
 
     // Device side data
-    const size_t size = 1024;
-    unsigned int * data;
+    const size_t  size = 1024;
+    unsigned int* data;
     HIP_CHECK(hipMalloc(&data, sizeof(unsigned int) * size));
 
     // Generators
@@ -204,8 +205,8 @@ TEST(rocrand_xorwow_prng_tests, different_seed_test)
     const unsigned long long seed1 = 0xbeefdeadbeefdeadULL;
 
     // Device side data
-    const size_t size = 1024;
-    unsigned int * data;
+    const size_t  size = 1024;
+    unsigned int* data;
     HIP_CHECK(hipMalloc(&data, sizeof(unsigned int) * size));
 
     // Generators
@@ -234,7 +235,8 @@ TEST(rocrand_xorwow_prng_tests, different_seed_test)
     size_t same = 0;
     for(size_t i = 0; i < size; i++)
     {
-        if(g1_host_data[i] == g0_host_data[i]) same++;
+        if(g1_host_data[i] == g0_host_data[i])
+            same++;
     }
     // It may happen that numbers are the same, so we
     // just make sure that most of them are different.
@@ -245,7 +247,7 @@ TEST(rocrand_xorwow_prng_tests, different_seed_test)
 
 TEST(rocrand_xorwow_prng_tests, discard_test)
 {
-    const unsigned long long seed = 1234567890123ULL;
+    const unsigned long long    seed = 1234567890123ULL;
     rocrand_xorwow::engine_type engine1(seed, 0, 678ULL);
     rocrand_xorwow::engine_type engine2(seed, 0, 677ULL);
 
@@ -254,13 +256,11 @@ TEST(rocrand_xorwow_prng_tests, discard_test)
     EXPECT_EQ(engine1(), engine2());
 
     const unsigned long long ds[] = {
-        1ULL, 4ULL, 37ULL, 583ULL, 7452ULL,
-        21032ULL, 35678ULL, 66778ULL, 10313475ULL, 82120230ULL
-    };
+        1ULL, 4ULL, 37ULL, 583ULL, 7452ULL, 21032ULL, 35678ULL, 66778ULL, 10313475ULL, 82120230ULL};
 
-    for (auto d : ds)
+    for(auto d : ds)
     {
-        for (unsigned long long i = 0; i < d; i++)
+        for(unsigned long long i = 0; i < d; i++)
         {
             (void)engine1.next();
         }
@@ -272,7 +272,7 @@ TEST(rocrand_xorwow_prng_tests, discard_test)
 
 TEST(rocrand_xorwow_prng_tests, discard_sequence_test)
 {
-    const unsigned long long seed = ~1234567890123ULL;
+    const unsigned long long    seed = ~1234567890123ULL;
     rocrand_xorwow::engine_type engine1(seed, 0, 444ULL);
     rocrand_xorwow::engine_type engine2(seed, 123ULL, 444ULL);
 
@@ -280,7 +280,7 @@ TEST(rocrand_xorwow_prng_tests, discard_sequence_test)
 
     EXPECT_EQ(engine1(), engine2());
 
-    engine1.discard( 5356446450ULL);
+    engine1.discard(5356446450ULL);
     engine1.discard_subsequence(123ULL);
     engine1.discard(30000000006ULL);
 

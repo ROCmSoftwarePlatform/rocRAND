@@ -19,8 +19,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <stdio.h>
 #include <gtest/gtest.h>
+#include <stdio.h>
 
 #include <hip/hip_runtime.h>
 #include <rocrand.h>
@@ -33,8 +33,8 @@
 
 TEST(rocrand_mtgp32_prng_tests, uniform_uint_test)
 {
-    const size_t size = 1313;
-    unsigned int * data;
+    const size_t  size = 1313;
+    unsigned int* data;
     HIP_CHECK(hipMalloc(&data, sizeof(unsigned int) * size));
 
     rocrand_mtgp32 g;
@@ -59,7 +59,7 @@ TEST(rocrand_mtgp32_prng_tests, uniform_uint_test)
 TEST(rocrand_mtgp32_prng_tests, uniform_float_test)
 {
     const size_t size = 1313;
-    float * data;
+    float*       data;
     hipMalloc(&data, sizeof(float) * size);
 
     rocrand_mtgp32 g;
@@ -86,7 +86,7 @@ TEST(rocrand_mtgp32_prng_tests, uniform_float_test)
 TEST(rocrand_mtgp32_prng_tests, normal_float_test)
 {
     const size_t size = 1313;
-    float * data;
+    float*       data;
     hipMalloc(&data, sizeof(float) * size);
 
     rocrand_mtgp32 g;
@@ -119,8 +119,8 @@ TEST(rocrand_mtgp32_prng_tests, normal_float_test)
 
 TEST(rocrand_mtgp32_prng_tests, poisson_test)
 {
-    const size_t size = 1313;
-    unsigned int * data;
+    const size_t  size = 1313;
+    unsigned int* data;
     HIP_CHECK(hipMalloc(&data, sizeof(unsigned int) * size));
 
     rocrand_mtgp32 g;
@@ -157,8 +157,8 @@ TEST(rocrand_mtgp32_prng_tests, poisson_test)
 TEST(rocrand_mtgp32_prng_tests, state_progress_test)
 {
     // Device data
-    const size_t size = 1025;
-    unsigned int * data;
+    const size_t  size = 1025;
+    unsigned int* data;
     HIP_CHECK(hipMalloc(&data, sizeof(unsigned int) * size));
 
     // Generator
@@ -183,7 +183,8 @@ TEST(rocrand_mtgp32_prng_tests, state_progress_test)
     size_t same = 0;
     for(size_t i = 0; i < size; i++)
     {
-        if(host_data1[i] == host_data2[i]) same++;
+        if(host_data1[i] == host_data2[i])
+            same++;
     }
     // It may happen that numbers are the same, so we
     // just make sure that most of them are different.
@@ -199,8 +200,8 @@ TEST(rocrand_mtgp32_prng_tests, same_seed_test)
     const unsigned long long seed = 5ULL;
 
     // Device side data
-    const size_t size = 1024;
-    unsigned int * data;
+    const size_t  size = 1024;
+    unsigned int* data;
     HIP_CHECK(hipMalloc(&data, sizeof(unsigned int) * size));
 
     // Generators
@@ -243,8 +244,8 @@ TEST(rocrand_mtgp32_prng_tests, different_seed_test)
     const unsigned long long seed1 = 10ULL;
 
     // Device side data
-    const size_t size = 1024;
-    unsigned int * data;
+    const size_t  size = 1024;
+    unsigned int* data;
     HIP_CHECK(hipMalloc(&data, sizeof(unsigned int) * size));
 
     // Generators
@@ -273,7 +274,8 @@ TEST(rocrand_mtgp32_prng_tests, different_seed_test)
     size_t same = 0;
     for(size_t i = 0; i < size; i++)
     {
-        if(g1_host_data[i] == g0_host_data[i]) same++;
+        if(g1_host_data[i] == g0_host_data[i])
+            same++;
     }
     // It may happen that numbers are the same, so we
     // just make sure that most of them are different.

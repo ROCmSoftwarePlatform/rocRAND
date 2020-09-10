@@ -18,15 +18,17 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <stdio.h>
 #include <gtest/gtest.h>
+#include <stdio.h>
 
 #include <hip/hip_runtime.h>
 #include <rocrand.h>
 
 #include "test_common.hpp"
 
-class rocrand_basic_tests : public ::testing::TestWithParam<rocrand_rng_type> { };
+class rocrand_basic_tests : public ::testing::TestWithParam<rocrand_rng_type>
+{
+};
 
 TEST(rocrand_basic_tests, rocrand_get_version_test)
 {
@@ -82,6 +84,4 @@ TEST_P(rocrand_basic_tests, rocrand_initialize_generator_test)
     ROCRAND_CHECK(rocrand_destroy_generator(g));
 }
 
-INSTANTIATE_TEST_SUITE_P(rocrand_basic_tests,
-                        rocrand_basic_tests,
-                        ::testing::ValuesIn(rng_types));
+INSTANTIATE_TEST_SUITE_P(rocrand_basic_tests, rocrand_basic_tests, ::testing::ValuesIn(rng_types));

@@ -18,8 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <stdio.h>
 #include <gtest/gtest.h>
+#include <stdio.h>
 
 #include <hip/hip_runtime.h>
 #include <hiprand.hpp>
@@ -32,7 +32,7 @@ TEST(hiprand_cpp_wrapper, hiprand_error)
     EXPECT_EQ(e.error_code(), HIPRAND_STATUS_SUCCESS);
 }
 
-template<class T>
+template <class T>
 void hiprand_rng_ctor_template()
 {
     hiprandGenerator_t generator = NULL;
@@ -41,14 +41,17 @@ void hiprand_rng_ctor_template()
     T x(generator);
     ASSERT_EQ(generator, (hiprandGenerator_t)NULL);
 
-    try {
+    try
+    {
         T y(generator);
         FAIL() << "Expected hiprand_cpp::error";
     }
-    catch(const hiprand_cpp::error& err) {
+    catch(const hiprand_cpp::error& err)
+    {
         EXPECT_EQ(err.error_code(), HIPRAND_STATUS_NOT_INITIALIZED);
     }
-    catch(...) {
+    catch(...)
+    {
         FAIL() << "Expected hiprand_cpp::error";
     }
 }
@@ -62,7 +65,7 @@ TEST(hiprand_cpp_wrapper, hiprand_rng_ctor)
     ASSERT_NO_THROW(hiprand_rng_ctor_template<hiprand_cpp::sobol32>());
 }
 
-template<class T>
+template <class T>
 void hiprand_prng_ctor_template()
 {
     T();
@@ -84,7 +87,7 @@ TEST(hiprand_cpp_wrapper, hiprand_prng_ctor)
     hiprand_cpp::mtgp32(11ULL);
 }
 
-template<class T1, class T2>
+template <class T1, class T2>
 void assert_same_types()
 {
     ::testing::StaticAssertTypeEq<T1, T2>();
@@ -120,7 +123,7 @@ TEST(hiprand_cpp_wrapper, hiprand_qrng_default_num_dimensions)
     EXPECT_EQ(hiprand_cpp::sobol32::default_num_dimensions, 1U);
 }
 
-template<class T>
+template <class T>
 void hiprand_qrng_ctor_template()
 {
     T();
@@ -128,14 +131,17 @@ void hiprand_qrng_ctor_template()
     T(11U, 2ULL); // dimensions, offset
     T(20000, 2ULL); // dimensions, offset
 
-    try {
+    try
+    {
         T(20001, 2ULL);
         FAIL() << "Expected hiprand_cpp::error";
     }
-    catch(const hiprand_cpp::error& err) {
+    catch(const hiprand_cpp::error& err)
+    {
         EXPECT_EQ(err.error_code(), HIPRAND_STATUS_OUT_OF_RANGE);
     }
-    catch(...) {
+    catch(...)
+    {
         FAIL() << "Expected hiprand_cpp::error";
     }
 }
@@ -145,7 +151,7 @@ TEST(hiprand_cpp_wrapper, hiprand_qrng_ctor)
     ASSERT_NO_THROW(hiprand_qrng_ctor_template<hiprand_cpp::sobol32>());
 }
 
-template<class T>
+template <class T>
 void hiprand_prng_seed_template()
 {
     T engine;
@@ -161,21 +167,24 @@ TEST(hiprand_cpp_wrapper, hiprand_prng_seed)
     ASSERT_NO_THROW(hiprand_prng_seed_template<hiprand_cpp::mtgp32>());
 }
 
-template<class T>
+template <class T>
 void hiprand_qrng_dims_template()
 {
     T engine;
     engine.dimensions(11U);
     engine.dimensions(20000U);
 
-    try {
+    try
+    {
         engine.dimensions(20001U);
         FAIL() << "Expected hiprand_cpp::error";
     }
-    catch(const hiprand_cpp::error& err) {
+    catch(const hiprand_cpp::error& err)
+    {
         EXPECT_EQ(err.error_code(), HIPRAND_STATUS_OUT_OF_RANGE);
     }
-    catch(...) {
+    catch(...)
+    {
         FAIL() << "Expected hiprand_cpp::error";
     }
 }
@@ -185,7 +194,7 @@ TEST(hiprand_cpp_wrapper, hiprand_qrng_dims)
     ASSERT_NO_THROW(hiprand_qrng_dims_template<hiprand_cpp::sobol32>());
 }
 
-template<class T>
+template <class T>
 void hiprand_rng_offset_template()
 {
     T engine;
@@ -201,10 +210,10 @@ TEST(hiprand_cpp_wrapper, hiprand_rng_offset)
     ASSERT_NO_THROW(hiprand_rng_offset_template<hiprand_cpp::sobol32>());
 }
 
-template<class T>
+template <class T>
 void hiprand_rng_stream_template()
 {
-    T engine;
+    T           engine;
     hipStream_t stream;
     HIP_CHECK(hipStreamCreate(&stream));
     engine.stream(stream);
@@ -221,18 +230,15 @@ TEST(hiprand_cpp_wrapper, hiprand_rng_stream)
     ASSERT_NO_THROW(hiprand_rng_stream_template<hiprand_cpp::sobol32>());
 }
 
-template<class T, class IntType>
+template <class T, class IntType>
 void hiprand_uniform_int_dist_template()
 {
-    T engine;
+    T                                              engine;
     hiprand_cpp::uniform_int_distribution<IntType> d;
 
     const size_t output_size = 8192;
-    IntType * output;
-    HIP_CHECK(
-        hipMalloc((void **)&output,
-        output_size * sizeof(IntType))
-    );
+    IntType*     output;
+    HIP_CHECK(hipMalloc((void**)&output, output_size * sizeof(IntType)));
     HIP_CHECK(hipDeviceSynchronize());
 
     // generate
@@ -240,13 +246,8 @@ void hiprand_uniform_int_dist_template()
     HIP_CHECK(hipDeviceSynchronize());
 
     std::vector<unsigned int> output_host(output_size);
-    HIP_CHECK(
-        hipMemcpy(
-            output_host.data(), output,
-            output_size * sizeof(unsigned int),
-            hipMemcpyDeviceToHost
-        )
-    );
+    HIP_CHECK(hipMemcpy(
+        output_host.data(), output, output_size * sizeof(unsigned int), hipMemcpyDeviceToHost));
     HIP_CHECK(hipDeviceSynchronize());
     HIP_CHECK(hipFree(output));
 
@@ -261,35 +262,23 @@ void hiprand_uniform_int_dist_template()
 
 TEST(hiprand_cpp_wrapper, hiprand_uniform_int_dist)
 {
-    ASSERT_NO_THROW((
-        hiprand_uniform_int_dist_template<hiprand_cpp::philox4x32_10, unsigned int>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_uniform_int_dist_template<hiprand_cpp::xorwow, unsigned int>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_uniform_int_dist_template<hiprand_cpp::mrg32k3a, unsigned int>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_uniform_int_dist_template<hiprand_cpp::mtgp32, unsigned int>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_uniform_int_dist_template<hiprand_cpp::sobol32, unsigned int>()
-    ));
+    ASSERT_NO_THROW(
+        (hiprand_uniform_int_dist_template<hiprand_cpp::philox4x32_10, unsigned int>()));
+    ASSERT_NO_THROW((hiprand_uniform_int_dist_template<hiprand_cpp::xorwow, unsigned int>()));
+    ASSERT_NO_THROW((hiprand_uniform_int_dist_template<hiprand_cpp::mrg32k3a, unsigned int>()));
+    ASSERT_NO_THROW((hiprand_uniform_int_dist_template<hiprand_cpp::mtgp32, unsigned int>()));
+    ASSERT_NO_THROW((hiprand_uniform_int_dist_template<hiprand_cpp::sobol32, unsigned int>()));
 }
 
-template<class T, class RealType>
+template <class T, class RealType>
 void hiprand_uniform_real_dist_template()
 {
-    T engine;
+    T                                                engine;
     hiprand_cpp::uniform_real_distribution<RealType> d;
 
     const size_t output_size = 8192;
-    RealType * output;
-    HIP_CHECK(
-        hipMalloc((void **)&output,
-        output_size * sizeof(RealType))
-    );
+    RealType*    output;
+    HIP_CHECK(hipMalloc((void**)&output, output_size * sizeof(RealType)));
     HIP_CHECK(hipDeviceSynchronize());
 
     // generate
@@ -297,13 +286,8 @@ void hiprand_uniform_real_dist_template()
     HIP_CHECK(hipDeviceSynchronize());
 
     std::vector<RealType> output_host(output_size);
-    HIP_CHECK(
-        hipMemcpy(
-            output_host.data(), output,
-            output_size * sizeof(RealType),
-            hipMemcpyDeviceToHost
-        )
-    );
+    HIP_CHECK(hipMemcpy(
+        output_host.data(), output, output_size * sizeof(RealType), hipMemcpyDeviceToHost));
     HIP_CHECK(hipDeviceSynchronize());
     HIP_CHECK(hipFree(output));
 
@@ -318,54 +302,31 @@ void hiprand_uniform_real_dist_template()
 
 TEST(hiprand_cpp_wrapper, hiprand_uniform_real_dist_float)
 {
-    ASSERT_NO_THROW((
-        hiprand_uniform_real_dist_template<hiprand_cpp::philox4x32_10, float>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_uniform_real_dist_template<hiprand_cpp::xorwow, float>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_uniform_real_dist_template<hiprand_cpp::mrg32k3a, float>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_uniform_real_dist_template<hiprand_cpp::mtgp32, float>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_uniform_real_dist_template<hiprand_cpp::sobol32, float>()
-    ));
+    ASSERT_NO_THROW((hiprand_uniform_real_dist_template<hiprand_cpp::philox4x32_10, float>()));
+    ASSERT_NO_THROW((hiprand_uniform_real_dist_template<hiprand_cpp::xorwow, float>()));
+    ASSERT_NO_THROW((hiprand_uniform_real_dist_template<hiprand_cpp::mrg32k3a, float>()));
+    ASSERT_NO_THROW((hiprand_uniform_real_dist_template<hiprand_cpp::mtgp32, float>()));
+    ASSERT_NO_THROW((hiprand_uniform_real_dist_template<hiprand_cpp::sobol32, float>()));
 }
 
 TEST(hiprand_cpp_wrapper, hiprand_uniform_real_dist_double)
 {
-    ASSERT_NO_THROW((
-        hiprand_uniform_real_dist_template<hiprand_cpp::philox4x32_10, double>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_uniform_real_dist_template<hiprand_cpp::xorwow, double>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_uniform_real_dist_template<hiprand_cpp::mrg32k3a, double>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_uniform_real_dist_template<hiprand_cpp::mtgp32, double>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_uniform_real_dist_template<hiprand_cpp::sobol32, double>()
-    ));
+    ASSERT_NO_THROW((hiprand_uniform_real_dist_template<hiprand_cpp::philox4x32_10, double>()));
+    ASSERT_NO_THROW((hiprand_uniform_real_dist_template<hiprand_cpp::xorwow, double>()));
+    ASSERT_NO_THROW((hiprand_uniform_real_dist_template<hiprand_cpp::mrg32k3a, double>()));
+    ASSERT_NO_THROW((hiprand_uniform_real_dist_template<hiprand_cpp::mtgp32, double>()));
+    ASSERT_NO_THROW((hiprand_uniform_real_dist_template<hiprand_cpp::sobol32, double>()));
 }
 
-template<class T, class RealType>
+template <class T, class RealType>
 void hiprand_normal_dist_template()
 {
-    T engine;
+    T                                          engine;
     hiprand_cpp::normal_distribution<RealType> d;
 
     const size_t output_size = 8192;
-    RealType * output;
-    HIP_CHECK(
-        hipMalloc((void **)&output,
-        output_size * sizeof(RealType))
-    );
+    RealType*    output;
+    HIP_CHECK(hipMalloc((void**)&output, output_size * sizeof(RealType)));
     HIP_CHECK(hipDeviceSynchronize());
 
     // generate
@@ -373,13 +334,8 @@ void hiprand_normal_dist_template()
     HIP_CHECK(hipDeviceSynchronize());
 
     std::vector<RealType> output_host(output_size);
-    HIP_CHECK(
-        hipMemcpy(
-            output_host.data(), output,
-            output_size * sizeof(RealType),
-            hipMemcpyDeviceToHost
-        )
-    );
+    HIP_CHECK(hipMemcpy(
+        output_host.data(), output, output_size * sizeof(RealType), hipMemcpyDeviceToHost));
     HIP_CHECK(hipDeviceSynchronize());
     HIP_CHECK(hipFree(output));
 
@@ -402,40 +358,20 @@ void hiprand_normal_dist_template()
 
 TEST(hiprand_cpp_wrapper, hiprand_normal_dist_float)
 {
-    ASSERT_NO_THROW((
-        hiprand_normal_dist_template<hiprand_cpp::philox4x32_10, float>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_normal_dist_template<hiprand_cpp::xorwow, float>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_normal_dist_template<hiprand_cpp::mrg32k3a, float>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_normal_dist_template<hiprand_cpp::mtgp32, float>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_normal_dist_template<hiprand_cpp::sobol32, float>()
-    ));
+    ASSERT_NO_THROW((hiprand_normal_dist_template<hiprand_cpp::philox4x32_10, float>()));
+    ASSERT_NO_THROW((hiprand_normal_dist_template<hiprand_cpp::xorwow, float>()));
+    ASSERT_NO_THROW((hiprand_normal_dist_template<hiprand_cpp::mrg32k3a, float>()));
+    ASSERT_NO_THROW((hiprand_normal_dist_template<hiprand_cpp::mtgp32, float>()));
+    ASSERT_NO_THROW((hiprand_normal_dist_template<hiprand_cpp::sobol32, float>()));
 }
 
 TEST(hiprand_cpp_wrapper, hiprand_normal_dist_double)
 {
-    ASSERT_NO_THROW((
-        hiprand_normal_dist_template<hiprand_cpp::philox4x32_10, double>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_normal_dist_template<hiprand_cpp::xorwow, double>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_normal_dist_template<hiprand_cpp::mrg32k3a, double>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_normal_dist_template<hiprand_cpp::mtgp32, double>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_normal_dist_template<hiprand_cpp::sobol32, double>()
-    ));
+    ASSERT_NO_THROW((hiprand_normal_dist_template<hiprand_cpp::philox4x32_10, double>()));
+    ASSERT_NO_THROW((hiprand_normal_dist_template<hiprand_cpp::xorwow, double>()));
+    ASSERT_NO_THROW((hiprand_normal_dist_template<hiprand_cpp::mrg32k3a, double>()));
+    ASSERT_NO_THROW((hiprand_normal_dist_template<hiprand_cpp::mtgp32, double>()));
+    ASSERT_NO_THROW((hiprand_normal_dist_template<hiprand_cpp::sobol32, double>()));
 }
 
 TEST(hiprand_cpp_wrapper, hiprand_normal_dist_param)
@@ -452,18 +388,15 @@ TEST(hiprand_cpp_wrapper, hiprand_normal_dist_param)
     ASSERT_TRUE(d1.param() == d3.param());
 }
 
-template<class T, class RealType>
+template <class T, class RealType>
 void hiprand_lognormal_dist_template()
 {
-    T engine;
+    T                                             engine;
     hiprand_cpp::lognormal_distribution<RealType> d(1.6, 0.25);
 
     const size_t output_size = 8192;
-    RealType * output;
-    HIP_CHECK(
-        hipMalloc((void **)&output,
-        output_size * sizeof(RealType))
-    );
+    RealType*    output;
+    HIP_CHECK(hipMalloc((void**)&output, output_size * sizeof(RealType)));
     HIP_CHECK(hipDeviceSynchronize());
 
     // generate
@@ -471,13 +404,8 @@ void hiprand_lognormal_dist_template()
     HIP_CHECK(hipDeviceSynchronize());
 
     std::vector<RealType> output_host(output_size);
-    HIP_CHECK(
-        hipMemcpy(
-            output_host.data(), output,
-            output_size * sizeof(RealType),
-            hipMemcpyDeviceToHost
-        )
-    );
+    HIP_CHECK(hipMemcpy(
+        output_host.data(), output, output_size * sizeof(RealType), hipMemcpyDeviceToHost));
     HIP_CHECK(hipDeviceSynchronize());
     HIP_CHECK(hipFree(output));
 
@@ -496,7 +424,7 @@ void hiprand_lognormal_dist_template()
     stddev = std::sqrt(stddev / output_size);
 
     double logmean = std::log(mean * mean / std::sqrt(stddev + mean * mean));
-    double logstd = std::sqrt(std::log(1.0f + stddev/(mean * mean)));
+    double logstd  = std::sqrt(std::log(1.0f + stddev / (mean * mean)));
 
     EXPECT_NEAR(1.6, logmean, 1.6 * 0.2);
     EXPECT_NEAR(0.25, logstd, 0.25 * 0.2);
@@ -504,40 +432,20 @@ void hiprand_lognormal_dist_template()
 
 TEST(hiprand_cpp_wrapper, hiprand_lognormal_dist_float)
 {
-    ASSERT_NO_THROW((
-        hiprand_lognormal_dist_template<hiprand_cpp::philox4x32_10, float>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_lognormal_dist_template<hiprand_cpp::xorwow, float>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_lognormal_dist_template<hiprand_cpp::mrg32k3a, float>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_lognormal_dist_template<hiprand_cpp::mtgp32, float>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_lognormal_dist_template<hiprand_cpp::sobol32, float>()
-    ));
+    ASSERT_NO_THROW((hiprand_lognormal_dist_template<hiprand_cpp::philox4x32_10, float>()));
+    ASSERT_NO_THROW((hiprand_lognormal_dist_template<hiprand_cpp::xorwow, float>()));
+    ASSERT_NO_THROW((hiprand_lognormal_dist_template<hiprand_cpp::mrg32k3a, float>()));
+    ASSERT_NO_THROW((hiprand_lognormal_dist_template<hiprand_cpp::mtgp32, float>()));
+    ASSERT_NO_THROW((hiprand_lognormal_dist_template<hiprand_cpp::sobol32, float>()));
 }
 
 TEST(hiprand_cpp_wrapper, hiprand_lognormal_dist_double)
 {
-    ASSERT_NO_THROW((
-        hiprand_lognormal_dist_template<hiprand_cpp::philox4x32_10, double>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_lognormal_dist_template<hiprand_cpp::xorwow, double>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_lognormal_dist_template<hiprand_cpp::mrg32k3a, double>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_lognormal_dist_template<hiprand_cpp::mtgp32, double>()
-    ));
-    ASSERT_NO_THROW((
-        hiprand_lognormal_dist_template<hiprand_cpp::sobol32, double>()
-    ));
+    ASSERT_NO_THROW((hiprand_lognormal_dist_template<hiprand_cpp::philox4x32_10, double>()));
+    ASSERT_NO_THROW((hiprand_lognormal_dist_template<hiprand_cpp::xorwow, double>()));
+    ASSERT_NO_THROW((hiprand_lognormal_dist_template<hiprand_cpp::mrg32k3a, double>()));
+    ASSERT_NO_THROW((hiprand_lognormal_dist_template<hiprand_cpp::mtgp32, double>()));
+    ASSERT_NO_THROW((hiprand_lognormal_dist_template<hiprand_cpp::sobol32, double>()));
 }
 
 TEST(hiprand_cpp_wrapper, hiprand_lognormal_dist_param)
@@ -559,18 +467,15 @@ TEST(hiprand_cpp_wrapper, hiprand_lognormal_dist_param)
     ASSERT_TRUE(d1.param() == d3.param());
 }
 
-template<class T, class IntType>
+template <class T, class IntType>
 void hiprand_poisson_dist_template(const double lambda)
 {
-    T engine;
+    T                                          engine;
     hiprand_cpp::poisson_distribution<IntType> d(lambda);
 
     const size_t output_size = 8192;
-    IntType * output;
-    HIP_CHECK(
-        hipMalloc((void **)&output,
-        output_size * sizeof(IntType))
-    );
+    IntType*     output;
+    HIP_CHECK(hipMalloc((void**)&output, output_size * sizeof(IntType)));
     HIP_CHECK(hipDeviceSynchronize());
 
     // generate
@@ -578,13 +483,8 @@ void hiprand_poisson_dist_template(const double lambda)
     HIP_CHECK(hipDeviceSynchronize());
 
     std::vector<IntType> output_host(output_size);
-    HIP_CHECK(
-        hipMemcpy(
-            output_host.data(), output,
-            output_size * sizeof(IntType),
-            hipMemcpyDeviceToHost
-        )
-    );
+    HIP_CHECK(hipMemcpy(
+        output_host.data(), output, output_size * sizeof(IntType), hipMemcpyDeviceToHost));
     HIP_CHECK(hipDeviceSynchronize());
     HIP_CHECK(hipFree(output));
 
@@ -606,33 +506,24 @@ void hiprand_poisson_dist_template(const double lambda)
     EXPECT_NEAR(variance, lambda, std::max(1.0, lambda * 1e-1));
 }
 
-class poisson_dist : public ::testing::TestWithParam<double> { };
+class poisson_dist : public ::testing::TestWithParam<double>
+{
+};
 
 TEST_P(poisson_dist, hiprand_poisson_dist)
 {
     const double lambda = GetParam();
-    ASSERT_NO_THROW((
-        hiprand_poisson_dist_template<hiprand_cpp::philox4x32_10, unsigned int>(lambda)
-    ));
-    ASSERT_NO_THROW((
-        hiprand_poisson_dist_template<hiprand_cpp::xorwow, unsigned int>(lambda)
-    ));
-    ASSERT_NO_THROW((
-        hiprand_poisson_dist_template<hiprand_cpp::mrg32k3a, unsigned int>(lambda)
-    ));
-    ASSERT_NO_THROW((
-        hiprand_poisson_dist_template<hiprand_cpp::mtgp32, unsigned int>(lambda)
-    ));
-    ASSERT_NO_THROW((
-        hiprand_poisson_dist_template<hiprand_cpp::sobol32, unsigned int>(lambda)
-    ));
+    ASSERT_NO_THROW(
+        (hiprand_poisson_dist_template<hiprand_cpp::philox4x32_10, unsigned int>(lambda)));
+    ASSERT_NO_THROW((hiprand_poisson_dist_template<hiprand_cpp::xorwow, unsigned int>(lambda)));
+    ASSERT_NO_THROW((hiprand_poisson_dist_template<hiprand_cpp::mrg32k3a, unsigned int>(lambda)));
+    ASSERT_NO_THROW((hiprand_poisson_dist_template<hiprand_cpp::mtgp32, unsigned int>(lambda)));
+    ASSERT_NO_THROW((hiprand_poisson_dist_template<hiprand_cpp::sobol32, unsigned int>(lambda)));
 }
 
-const double lambdas[] = { 1.0, 5.5, 20.0, 100.0, 1234.5, 5000.0 };
+const double lambdas[] = {1.0, 5.5, 20.0, 100.0, 1234.5, 5000.0};
 
-INSTANTIATE_TEST_SUITE_P(hiprand_cpp_wrapper,
-                        poisson_dist,
-                        ::testing::ValuesIn(lambdas));
+INSTANTIATE_TEST_SUITE_P(hiprand_cpp_wrapper, poisson_dist, ::testing::ValuesIn(lambdas));
 
 TEST(hiprand_cpp_wrapper, hiprand_poisson_dist_param)
 {

@@ -18,8 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <stdio.h>
 #include <gtest/gtest.h>
+#include <stdio.h>
 
 #include <hip/hip_runtime.h>
 #include <rocrand.h>
@@ -33,8 +33,8 @@
 
 TEST(rocrand_sobol32_qrng_tests, uniform_uint_test)
 {
-    const size_t size = 1313;
-    unsigned int * data;
+    const size_t  size = 1313;
+    unsigned int* data;
     HIP_CHECK(hipMalloc(&data, sizeof(unsigned int) * size));
 
     rocrand_sobol32 g;
@@ -59,7 +59,7 @@ TEST(rocrand_sobol32_qrng_tests, uniform_uint_test)
 TEST(rocrand_sobol32_qrng_tests, uniform_float_test)
 {
     const size_t size = 1313;
-    float * data;
+    float*       data;
     HIP_CHECK(hipMalloc(&data, sizeof(float) * size));
 
     rocrand_sobol32 g;
@@ -86,7 +86,7 @@ TEST(rocrand_sobol32_qrng_tests, uniform_float_test)
 TEST(rocrand_sobol32_qrng_tests, normal_float_test)
 {
     const size_t size = 1313;
-    float * data;
+    float*       data;
     HIP_CHECK(hipMalloc(&data, sizeof(float) * size));
 
     rocrand_sobol32 g;
@@ -119,8 +119,8 @@ TEST(rocrand_sobol32_qrng_tests, normal_float_test)
 
 TEST(rocrand_sobol32_qrng_tests, poisson_test)
 {
-    const size_t size = 1313;
-    unsigned int * data;
+    const size_t  size = 1313;
+    unsigned int* data;
     HIP_CHECK(hipMalloc(&data, sizeof(unsigned int) * size));
 
     rocrand_sobol32 g;
@@ -155,7 +155,7 @@ TEST(rocrand_sobol32_qrng_tests, poisson_test)
 TEST(rocrand_sobol32_qrng_tests, dimesions_test)
 {
     const size_t size = 12345;
-    float * data;
+    float*       data;
     HIP_CHECK(hipMalloc(&data, sizeof(float) * size));
 
     rocrand_sobol32 g;
@@ -177,8 +177,8 @@ TEST(rocrand_sobol32_qrng_tests, dimesions_test)
 TEST(rocrand_sobol32_qrng_tests, state_progress_test)
 {
     // Device data
-    const size_t size = 1025;
-    unsigned int * data;
+    const size_t  size = 1025;
+    unsigned int* data;
     HIP_CHECK(hipMalloc(&data, sizeof(unsigned int) * size));
 
     // Generator
@@ -203,7 +203,8 @@ TEST(rocrand_sobol32_qrng_tests, state_progress_test)
     size_t same = 0;
     for(size_t i = 0; i < size; i++)
     {
-        if(host_data1[i] == host_data2[i]) same++;
+        if(host_data1[i] == host_data2[i])
+            same++;
     }
     // It may happen that numbers are the same, so we
     // just make sure that most of them are different.
@@ -228,14 +229,11 @@ TEST(rocrand_sobol32_qrng_tests, discard_test)
     EXPECT_EQ(engine1(), engine2());
     EXPECT_EQ(engine1(), engine2());
 
-    const unsigned int ds[] = {
-        0, 1, 4, 37, 583, 7452,
-        21032, 35678, 66778, 10313475, 82120230
-    };
+    const unsigned int ds[] = {0, 1, 4, 37, 583, 7452, 21032, 35678, 66778, 10313475, 82120230};
 
-    for (auto d : ds)
+    for(auto d : ds)
     {
-        for (unsigned int i = 0; i < d; i++)
+        for(unsigned int i = 0; i < d; i++)
         {
             engine1.discard();
         }
@@ -252,11 +250,9 @@ TEST(rocrand_sobol32_qrng_tests, discard_stride_test)
 
     EXPECT_EQ(engine1(), engine2());
 
-    const unsigned int ds[] = {
-        1, 10, 12, 20, 4, 5, 30
-    };
+    const unsigned int ds[] = {1, 10, 12, 20, 4, 5, 30};
 
-    for (auto d : ds)
+    for(auto d : ds)
     {
         engine1.discard(1 << d);
         engine2.discard_stride(1 << d);

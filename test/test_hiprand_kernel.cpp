@@ -18,30 +18,29 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <stdio.h>
 #include <gtest/gtest.h>
+#include <stdio.h>
 
-#include <vector>
 #include <cmath>
+#include <vector>
 
 #include <hip/hip_runtime.h>
 
 #define QUALIFIERS __forceinline__ __host__ __device__
-#include <hiprand_kernel.h>
 #include <hiprand.h>
+#include <hiprand_kernel.h>
 
 #define HIP_CHECK(x) ASSERT_EQ(x, hipSuccess)
 #define HIPRAND_CHECK(state) ASSERT_EQ(state, HIPRAND_STATUS_SUCCESS)
 
 template <class GeneratorState>
-__global__
-__launch_bounds__(64, HIPRAND_DEFAULT_MIN_WARPS_PER_EU)
-void hiprand_init_kernel(GeneratorState * states,
-                         const size_t states_size,
-                         unsigned long long seed,
-                         unsigned long long offset)
+__global__ __launch_bounds__(64, HIPRAND_DEFAULT_MIN_WARPS_PER_EU) void hiprand_init_kernel(
+    GeneratorState*    states,
+    const size_t       states_size,
+    unsigned long long seed,
+    unsigned long long offset)
 {
-    const unsigned int state_id = hipBlockIdx_x * hipBlockDim_x + hipThreadIdx_x;
+    const unsigned int state_id    = hipBlockIdx_x * hipBlockDim_x + hipThreadIdx_x;
     const unsigned int subsequence = state_id;
     if(state_id < states_size)
     {
@@ -52,14 +51,13 @@ void hiprand_init_kernel(GeneratorState * states,
 }
 
 template <class GeneratorState>
-__global__
-__launch_bounds__(64, HIPRAND_DEFAULT_MIN_WARPS_PER_EU)
-void hiprand_skip_kernel(GeneratorState * states,
-                         const size_t states_size,
-                         unsigned long long seed,
-                         unsigned long long offset)
+__global__ __launch_bounds__(64, HIPRAND_DEFAULT_MIN_WARPS_PER_EU) void hiprand_skip_kernel(
+    GeneratorState*    states,
+    const size_t       states_size,
+    unsigned long long seed,
+    unsigned long long offset)
 {
-    const unsigned int state_id = hipBlockIdx_x * hipBlockDim_x + hipThreadIdx_x;
+    const unsigned int state_id    = hipBlockIdx_x * hipBlockDim_x + hipThreadIdx_x;
     const unsigned int subsequence = state_id;
     if(state_id < states_size)
     {
@@ -72,19 +70,18 @@ void hiprand_skip_kernel(GeneratorState * states,
 }
 
 template <class GeneratorState>
-__global__
-__launch_bounds__(64, HIPRAND_DEFAULT_MIN_WARPS_PER_EU)
-void hiprand_kernel(unsigned int * output, const size_t size)
+__global__ __launch_bounds__(64, HIPRAND_DEFAULT_MIN_WARPS_PER_EU) void hiprand_kernel(
+    unsigned int* output, const size_t size)
 {
-    const unsigned int state_id = hipBlockIdx_x * hipBlockDim_x + hipThreadIdx_x;
+    const unsigned int state_id    = hipBlockIdx_x * hipBlockDim_x + hipThreadIdx_x;
     const unsigned int global_size = hipGridDim_x * hipBlockDim_x;
 
-    GeneratorState state;
+    GeneratorState     state;
     const unsigned int subsequence = state_id;
     hiprand_init(12345, subsequence, 0, &state);
 
-    unsigned int index = state_id;
-    const size_t r = size%hipBlockDim_x;
+    unsigned int index           = state_id;
+    const size_t r               = size % hipBlockDim_x;
     const size_t size_rounded_up = r == 0 ? size : size + (hipBlockDim_x - r);
     while(index < size_rounded_up)
     {
@@ -96,19 +93,18 @@ void hiprand_kernel(unsigned int * output, const size_t size)
 }
 
 template <class GeneratorState>
-__global__
-__launch_bounds__(64, HIPRAND_DEFAULT_MIN_WARPS_PER_EU)
-void hiprand_uniform_kernel(float * output, const size_t size)
+__global__ __launch_bounds__(64, HIPRAND_DEFAULT_MIN_WARPS_PER_EU) void hiprand_uniform_kernel(
+    float* output, const size_t size)
 {
-    const unsigned int state_id = hipBlockIdx_x * hipBlockDim_x + hipThreadIdx_x;
+    const unsigned int state_id    = hipBlockIdx_x * hipBlockDim_x + hipThreadIdx_x;
     const unsigned int global_size = hipGridDim_x * hipBlockDim_x;
 
-    GeneratorState state;
+    GeneratorState     state;
     const unsigned int subsequence = state_id;
     hiprand_init(12345, subsequence, 0, &state);
 
-    unsigned int index = state_id;
-    const size_t r = size%hipBlockDim_x;
+    unsigned int index           = state_id;
+    const size_t r               = size % hipBlockDim_x;
     const size_t size_rounded_up = r == 0 ? size : size + (hipBlockDim_x - r);
     while(index < size_rounded_up)
     {
@@ -120,19 +116,18 @@ void hiprand_uniform_kernel(float * output, const size_t size)
 }
 
 template <class GeneratorState>
-__global__
-__launch_bounds__(64, HIPRAND_DEFAULT_MIN_WARPS_PER_EU)
-void hiprand_normal_kernel(float * output, const size_t size)
+__global__ __launch_bounds__(64, HIPRAND_DEFAULT_MIN_WARPS_PER_EU) void hiprand_normal_kernel(
+    float* output, const size_t size)
 {
-    const unsigned int state_id = hipBlockIdx_x * hipBlockDim_x + hipThreadIdx_x;
+    const unsigned int state_id    = hipBlockIdx_x * hipBlockDim_x + hipThreadIdx_x;
     const unsigned int global_size = hipGridDim_x * hipBlockDim_x;
 
-    GeneratorState state;
+    GeneratorState     state;
     const unsigned int subsequence = state_id;
     hiprand_init(12345, subsequence, 0, &state);
 
-    unsigned int index = state_id;
-    const size_t r = size%hipBlockDim_x;
+    unsigned int index           = state_id;
+    const size_t r               = size % hipBlockDim_x;
     const size_t size_rounded_up = r == 0 ? size : size + (hipBlockDim_x - r);
     while(index < size_rounded_up)
     {
@@ -149,19 +144,18 @@ void hiprand_normal_kernel(float * output, const size_t size)
 }
 
 template <class GeneratorState>
-__global__
-__launch_bounds__(64, HIPRAND_DEFAULT_MIN_WARPS_PER_EU)
-void hiprand_log_normal_kernel(float * output, const size_t size)
+__global__ __launch_bounds__(64, HIPRAND_DEFAULT_MIN_WARPS_PER_EU) void hiprand_log_normal_kernel(
+    float* output, const size_t size)
 {
-    const unsigned int state_id = hipBlockIdx_x * hipBlockDim_x + hipThreadIdx_x;
+    const unsigned int state_id    = hipBlockIdx_x * hipBlockDim_x + hipThreadIdx_x;
     const unsigned int global_size = hipGridDim_x * hipBlockDim_x;
 
-    GeneratorState state;
+    GeneratorState     state;
     const unsigned int subsequence = state_id;
     hiprand_init(12345, subsequence, 0, &state);
 
-    unsigned int index = state_id;
-    const size_t r = size%hipBlockDim_x;
+    unsigned int index           = state_id;
+    const size_t r               = size % hipBlockDim_x;
     const size_t size_rounded_up = r == 0 ? size : size + (hipBlockDim_x - r);
     while(index < size_rounded_up)
     {
@@ -178,19 +172,18 @@ void hiprand_log_normal_kernel(float * output, const size_t size)
 }
 
 template <class GeneratorState>
-__global__
-__launch_bounds__(64, HIPRAND_DEFAULT_MIN_WARPS_PER_EU)
-void hiprand_poisson_kernel(unsigned int * output, const size_t size, double lambda)
+__global__ __launch_bounds__(64, HIPRAND_DEFAULT_MIN_WARPS_PER_EU) void hiprand_poisson_kernel(
+    unsigned int* output, const size_t size, double lambda)
 {
-    const unsigned int state_id = hipBlockIdx_x * hipBlockDim_x + hipThreadIdx_x;
+    const unsigned int state_id    = hipBlockIdx_x * hipBlockDim_x + hipThreadIdx_x;
     const unsigned int global_size = hipGridDim_x * hipBlockDim_x;
 
-    GeneratorState state;
+    GeneratorState     state;
     const unsigned int subsequence = state_id;
     hiprand_init(12345, subsequence, 0, &state);
 
-    unsigned int index = state_id;
-    const size_t r = size%hipBlockDim_x;
+    unsigned int index           = state_id;
+    const size_t r               = size % hipBlockDim_x;
     const size_t size_rounded_up = r == 0 ? size : size + (hipBlockDim_x - r);
     while(index < size_rounded_up)
     {
@@ -202,19 +195,18 @@ void hiprand_poisson_kernel(unsigned int * output, const size_t size, double lam
 }
 
 template <class GeneratorState>
-__global__
-__launch_bounds__(64, HIPRAND_DEFAULT_MIN_WARPS_PER_EU)
-void hiprand_discrete_kernel(unsigned int * output, const size_t size, hiprandDiscreteDistribution_t discrete_distribution)
+__global__ __launch_bounds__(64, HIPRAND_DEFAULT_MIN_WARPS_PER_EU) void hiprand_discrete_kernel(
+    unsigned int* output, const size_t size, hiprandDiscreteDistribution_t discrete_distribution)
 {
-    const unsigned int state_id = hipBlockIdx_x * hipBlockDim_x + hipThreadIdx_x;
+    const unsigned int state_id    = hipBlockIdx_x * hipBlockDim_x + hipThreadIdx_x;
     const unsigned int global_size = hipGridDim_x * hipBlockDim_x;
 
-    GeneratorState state;
+    GeneratorState     state;
     const unsigned int subsequence = state_id;
     hiprand_init(12345, subsequence, 0, &state);
 
-    unsigned int index = state_id;
-    const size_t r = size%hipBlockDim_x;
+    unsigned int index           = state_id;
+    const size_t r               = size % hipBlockDim_x;
     const size_t size_rounded_up = r == 0 ? size : size + (hipBlockDim_x - r);
     while(index < size_rounded_up)
     {
@@ -225,25 +217,28 @@ void hiprand_discrete_kernel(unsigned int * output, const size_t size, hiprandDi
     }
 }
 
-template<class T>
+template <class T>
 void hiprand_kernel_h_hiprand_init_test()
 {
     typedef T state_type;
 
-    unsigned long long seed = 0xdeadbeefbeefdeadULL;
+    unsigned long long seed   = 0xdeadbeefbeefdeadULL;
     unsigned long long offset = 4;
 
     const size_t states_size = 256;
-    state_type * states;
-    HIP_CHECK(hipMalloc((void **)&states, states_size * sizeof(state_type)));
+    state_type*  states;
+    HIP_CHECK(hipMalloc((void**)&states, states_size * sizeof(state_type)));
     HIP_CHECK(hipDeviceSynchronize());
 
-    hipLaunchKernelGGL(
-        HIP_KERNEL_NAME(hiprand_init_kernel),
-        dim3(4), dim3(64), 0, 0,
-        states, states_size,
-        seed, offset
-    );
+    hipLaunchKernelGGL(HIP_KERNEL_NAME(hiprand_init_kernel),
+                       dim3(4),
+                       dim3(64),
+                       0,
+                       0,
+                       states,
+                       states_size,
+                       seed,
+                       offset);
     HIP_CHECK(hipPeekAtLastError());
     HIP_CHECK(hipDeviceSynchronize());
     HIP_CHECK(hipFree(states));
@@ -278,30 +273,28 @@ TEST(hiprand_kernel_h_philox4x32_10, hiprand_init_nvcc)
 {
     typedef hiprandStatePhilox4_32_10_t state_type;
 
-    unsigned long long seed = 0xdeadbeefbeefdeadULL;
+    unsigned long long seed   = 0xdeadbeefbeefdeadULL;
     unsigned long long offset = 4 * ((UINT_MAX * 17ULL) + 17);
 
     const size_t states_size = 256;
-    state_type * states;
-    HIP_CHECK(hipMalloc((void **)&states, states_size * sizeof(state_type)));
+    state_type*  states;
+    HIP_CHECK(hipMalloc((void**)&states, states_size * sizeof(state_type)));
     HIP_CHECK(hipDeviceSynchronize());
 
-    hipLaunchKernelGGL(
-        HIP_KERNEL_NAME(hiprand_init_kernel),
-        dim3(4), dim3(64), 0, 0,
-        states, states_size,
-        seed, offset
-    );
+    hipLaunchKernelGGL(HIP_KERNEL_NAME(hiprand_init_kernel),
+                       dim3(4),
+                       dim3(64),
+                       0,
+                       0,
+                       states,
+                       states_size,
+                       seed,
+                       offset);
     HIP_CHECK(hipPeekAtLastError());
 
     std::vector<state_type> states_host(states_size);
-    HIP_CHECK(
-        hipMemcpy(
-            states_host.data(), states,
-            states_size * sizeof(state_type),
-            hipMemcpyDeviceToHost
-        )
-    );
+    HIP_CHECK(hipMemcpy(
+        states_host.data(), states, states_size * sizeof(state_type), hipMemcpyDeviceToHost));
     HIP_CHECK(hipDeviceSynchronize());
     HIP_CHECK(hipFree(states));
 
@@ -316,12 +309,7 @@ TEST(hiprand_kernel_h_philox4x32_10, hiprand_init_nvcc)
         EXPECT_EQ(s.ctr.z, subsequence);
         EXPECT_EQ(s.ctr.w, 0U);
 
-        EXPECT_TRUE(
-            s.output.x != 0U
-            || s.output.y != 0U
-            || s.output.z != 0U
-            || s.output.w
-        );
+        EXPECT_TRUE(s.output.x != 0U || s.output.y != 0U || s.output.z != 0U || s.output.w);
 
         EXPECT_EQ(s.STATE, 0U);
 
@@ -333,30 +321,28 @@ TEST(hiprand_kernel_h_philox4x32_10, hiprand_skip_nvcc)
 {
     typedef hiprandStatePhilox4_32_10_t state_type;
 
-    unsigned long long seed = 0xdeadbeefbeefdeadULL;
+    unsigned long long seed   = 0xdeadbeefbeefdeadULL;
     unsigned long long offset = 4 * ((UINT_MAX * 17ULL) + 17);
 
     const size_t states_size = 256;
-    state_type * states;
-    HIP_CHECK(hipMalloc((void **)&states, states_size * sizeof(state_type)));
+    state_type*  states;
+    HIP_CHECK(hipMalloc((void**)&states, states_size * sizeof(state_type)));
     HIP_CHECK(hipDeviceSynchronize());
 
-    hipLaunchKernelGGL(
-        HIP_KERNEL_NAME(hiprand_skip_kernel),
-        dim3(4), dim3(64), 0, 0,
-        states, states_size,
-        seed, offset
-    );
+    hipLaunchKernelGGL(HIP_KERNEL_NAME(hiprand_skip_kernel),
+                       dim3(4),
+                       dim3(64),
+                       0,
+                       0,
+                       states,
+                       states_size,
+                       seed,
+                       offset);
     HIP_CHECK(hipPeekAtLastError());
 
     std::vector<state_type> states_host(states_size);
-    HIP_CHECK(
-        hipMemcpy(
-            states_host.data(), states,
-            states_size * sizeof(state_type),
-            hipMemcpyDeviceToHost
-        )
-    );
+    HIP_CHECK(hipMemcpy(
+        states_host.data(), states, states_size * sizeof(state_type), hipMemcpyDeviceToHost));
     HIP_CHECK(hipDeviceSynchronize());
     HIP_CHECK(hipFree(states));
 
@@ -373,31 +359,23 @@ TEST(hiprand_kernel_h_philox4x32_10, hiprand_skip_nvcc)
 }
 #endif
 
-template<class T>
+template <class T>
 void hiprand_kernel_h_hiprand_test()
 {
     typedef T state_type;
 
-    const size_t output_size = 8192;
-    unsigned int * output;
-    HIP_CHECK(hipMalloc((void **)&output, output_size * sizeof(unsigned int)));
+    const size_t  output_size = 8192;
+    unsigned int* output;
+    HIP_CHECK(hipMalloc((void**)&output, output_size * sizeof(unsigned int)));
     HIP_CHECK(hipDeviceSynchronize());
 
     hipLaunchKernelGGL(
-        HIP_KERNEL_NAME(hiprand_kernel<state_type>),
-        dim3(4), dim3(64), 0, 0,
-        output, output_size
-    );
+        HIP_KERNEL_NAME(hiprand_kernel<state_type>), dim3(4), dim3(64), 0, 0, output, output_size);
     HIP_CHECK(hipPeekAtLastError());
 
     std::vector<unsigned int> output_host(output_size);
-    HIP_CHECK(
-        hipMemcpy(
-            output_host.data(), output,
-            output_size * sizeof(unsigned int),
-            hipMemcpyDeviceToHost
-        )
-    );
+    HIP_CHECK(hipMemcpy(
+        output_host.data(), output, output_size * sizeof(unsigned int), hipMemcpyDeviceToHost));
     HIP_CHECK(hipDeviceSynchronize());
     HIP_CHECK(hipFree(output));
 
@@ -434,31 +412,28 @@ TEST(hiprand_kernel_h_default, hiprand)
     hiprand_kernel_h_hiprand_test<state_type>();
 }
 
-template<class T>
+template <class T>
 void hiprand_kernel_h_hiprand_uniform_test()
 {
     typedef T state_type;
 
     const size_t output_size = 8192;
-    float * output;
-    HIP_CHECK(hipMalloc((void **)&output, output_size * sizeof(float)));
+    float*       output;
+    HIP_CHECK(hipMalloc((void**)&output, output_size * sizeof(float)));
     HIP_CHECK(hipDeviceSynchronize());
 
-    hipLaunchKernelGGL(
-        HIP_KERNEL_NAME(hiprand_uniform_kernel<state_type>),
-        dim3(4), dim3(64), 0, 0,
-        output, output_size
-    );
+    hipLaunchKernelGGL(HIP_KERNEL_NAME(hiprand_uniform_kernel<state_type>),
+                       dim3(4),
+                       dim3(64),
+                       0,
+                       0,
+                       output,
+                       output_size);
     HIP_CHECK(hipPeekAtLastError());
 
     std::vector<float> output_host(output_size);
     HIP_CHECK(
-        hipMemcpy(
-            output_host.data(), output,
-            output_size * sizeof(float),
-            hipMemcpyDeviceToHost
-        )
-    );
+        hipMemcpy(output_host.data(), output, output_size * sizeof(float), hipMemcpyDeviceToHost));
     HIP_CHECK(hipDeviceSynchronize());
     HIP_CHECK(hipFree(output));
 
@@ -495,31 +470,28 @@ TEST(hiprand_kernel_h_default, hiprand_uniform)
     hiprand_kernel_h_hiprand_uniform_test<state_type>();
 }
 
-template<class T>
+template <class T>
 void hiprand_kernel_h_hiprand_normal_test()
 {
     typedef T state_type;
 
     const size_t output_size = 8192;
-    float * output;
-    HIP_CHECK(hipMalloc((void **)&output, output_size * sizeof(float)));
+    float*       output;
+    HIP_CHECK(hipMalloc((void**)&output, output_size * sizeof(float)));
     HIP_CHECK(hipDeviceSynchronize());
 
-    hipLaunchKernelGGL(
-        HIP_KERNEL_NAME(hiprand_normal_kernel<state_type>),
-        dim3(4), dim3(64), 0, 0,
-        output, output_size
-    );
+    hipLaunchKernelGGL(HIP_KERNEL_NAME(hiprand_normal_kernel<state_type>),
+                       dim3(4),
+                       dim3(64),
+                       0,
+                       0,
+                       output,
+                       output_size);
     HIP_CHECK(hipPeekAtLastError());
 
     std::vector<float> output_host(output_size);
     HIP_CHECK(
-        hipMemcpy(
-            output_host.data(), output,
-            output_size * sizeof(float),
-            hipMemcpyDeviceToHost
-        )
-    );
+        hipMemcpy(output_host.data(), output, output_size * sizeof(float), hipMemcpyDeviceToHost));
     HIP_CHECK(hipDeviceSynchronize());
     HIP_CHECK(hipFree(output));
 
@@ -564,31 +536,28 @@ TEST(hiprand_kernel_h_default, hiprand_normal)
     hiprand_kernel_h_hiprand_normal_test<state_type>();
 }
 
-template<class T>
+template <class T>
 void hiprand_kernel_h_hiprand_log_normal_test()
 {
     typedef T state_type;
 
     const size_t output_size = 8192;
-    float * output;
-    HIP_CHECK(hipMalloc((void **)&output, output_size * sizeof(float)));
+    float*       output;
+    HIP_CHECK(hipMalloc((void**)&output, output_size * sizeof(float)));
     HIP_CHECK(hipDeviceSynchronize());
 
-    hipLaunchKernelGGL(
-        HIP_KERNEL_NAME(hiprand_log_normal_kernel<state_type>),
-        dim3(4), dim3(64), 0, 0,
-        output, output_size
-    );
+    hipLaunchKernelGGL(HIP_KERNEL_NAME(hiprand_log_normal_kernel<state_type>),
+                       dim3(4),
+                       dim3(64),
+                       0,
+                       0,
+                       output,
+                       output_size);
     HIP_CHECK(hipPeekAtLastError());
 
     std::vector<float> output_host(output_size);
     HIP_CHECK(
-        hipMemcpy(
-            output_host.data(), output,
-            output_size * sizeof(float),
-            hipMemcpyDeviceToHost
-        )
-    );
+        hipMemcpy(output_host.data(), output, output_size * sizeof(float), hipMemcpyDeviceToHost));
     HIP_CHECK(hipDeviceSynchronize());
     HIP_CHECK(hipFree(output));
 
@@ -607,7 +576,7 @@ void hiprand_kernel_h_hiprand_log_normal_test()
     stddev = std::sqrt(stddev / output_size);
 
     double logmean = std::log(mean * mean / std::sqrt(stddev + mean * mean));
-    double logstd = std::sqrt(std::log(1.0f + stddev/(mean * mean)));
+    double logstd  = std::sqrt(std::log(1.0f + stddev / (mean * mean)));
 
     EXPECT_NEAR(1.6, logmean, 1.6 * 0.2);
     EXPECT_NEAR(0.25, logstd, 0.25 * 0.2);
@@ -637,31 +606,29 @@ TEST(hiprand_kernel_h_default, hiprand_log_normal)
     hiprand_kernel_h_hiprand_log_normal_test<state_type>();
 }
 
-template<class T>
+template <class T>
 void hiprand_kernel_h_hiprand_poisson_test(double lambda)
 {
     typedef T state_type;
 
-    const size_t output_size = 8192;
-    unsigned int * output;
-    HIP_CHECK(hipMalloc((void **)&output, output_size * sizeof(unsigned int)));
+    const size_t  output_size = 8192;
+    unsigned int* output;
+    HIP_CHECK(hipMalloc((void**)&output, output_size * sizeof(unsigned int)));
     HIP_CHECK(hipDeviceSynchronize());
 
-    hipLaunchKernelGGL(
-        HIP_KERNEL_NAME(hiprand_poisson_kernel<state_type>),
-        dim3(4), dim3(64), 0, 0,
-        output, output_size, lambda
-    );
+    hipLaunchKernelGGL(HIP_KERNEL_NAME(hiprand_poisson_kernel<state_type>),
+                       dim3(4),
+                       dim3(64),
+                       0,
+                       0,
+                       output,
+                       output_size,
+                       lambda);
     HIP_CHECK(hipPeekAtLastError());
 
     std::vector<unsigned int> output_host(output_size);
-    HIP_CHECK(
-        hipMemcpy(
-            output_host.data(), output,
-            output_size * sizeof(unsigned int),
-            hipMemcpyDeviceToHost
-        )
-    );
+    HIP_CHECK(hipMemcpy(
+        output_host.data(), output, output_size * sizeof(unsigned int), hipMemcpyDeviceToHost));
     HIP_CHECK(hipDeviceSynchronize());
     HIP_CHECK(hipFree(output));
 
@@ -683,34 +650,33 @@ void hiprand_kernel_h_hiprand_poisson_test(double lambda)
     EXPECT_NEAR(variance, lambda, std::max(1.0, lambda * 1e-1));
 }
 
-template<class T>
+template <class T>
 void hiprand_kernel_h_hiprand_discrete_test(double lambda)
 {
     typedef T state_type;
 
-    const size_t output_size = 8192;
-    unsigned int * output;
-    HIP_CHECK(hipMalloc((void **)&output, output_size * sizeof(unsigned int)));
+    const size_t  output_size = 8192;
+    unsigned int* output;
+    HIP_CHECK(hipMalloc((void**)&output, output_size * sizeof(unsigned int)));
     HIP_CHECK(hipDeviceSynchronize());
 
     hiprandDiscreteDistribution_t discrete_distribution;
-    ASSERT_EQ(hiprandCreatePoissonDistribution(lambda, &discrete_distribution), HIPRAND_STATUS_SUCCESS);
+    ASSERT_EQ(hiprandCreatePoissonDistribution(lambda, &discrete_distribution),
+              HIPRAND_STATUS_SUCCESS);
 
-    hipLaunchKernelGGL(
-        HIP_KERNEL_NAME(hiprand_discrete_kernel<state_type>),
-        dim3(4), dim3(64), 0, 0,
-        output, output_size, discrete_distribution
-    );
+    hipLaunchKernelGGL(HIP_KERNEL_NAME(hiprand_discrete_kernel<state_type>),
+                       dim3(4),
+                       dim3(64),
+                       0,
+                       0,
+                       output,
+                       output_size,
+                       discrete_distribution);
     HIP_CHECK(hipPeekAtLastError());
 
     std::vector<unsigned int> output_host(output_size);
-    HIP_CHECK(
-        hipMemcpy(
-            output_host.data(), output,
-            output_size * sizeof(unsigned int),
-            hipMemcpyDeviceToHost
-        )
-    );
+    HIP_CHECK(hipMemcpy(
+        output_host.data(), output, output_size * sizeof(unsigned int), hipMemcpyDeviceToHost));
     HIP_CHECK(hipDeviceSynchronize());
     HIP_CHECK(hipFree(output));
     ASSERT_EQ(hiprandDestroyDistribution(discrete_distribution), HIPRAND_STATUS_SUCCESS);
@@ -733,9 +699,11 @@ void hiprand_kernel_h_hiprand_discrete_test(double lambda)
     EXPECT_NEAR(variance, lambda, std::max(1.0, lambda * 1e-1));
 }
 
-const double lambdas[] = { 1.0, 5.5, 20.0, 100.0, 1234.5, 5000.0 };
+const double lambdas[] = {1.0, 5.5, 20.0, 100.0, 1234.5, 5000.0};
 
-class hiprand_kernel_h_philox4x32_10_poisson : public ::testing::TestWithParam<double> { };
+class hiprand_kernel_h_philox4x32_10_poisson : public ::testing::TestWithParam<double>
+{
+};
 
 TEST_P(hiprand_kernel_h_philox4x32_10_poisson, hiprand_poisson)
 {
@@ -750,10 +718,12 @@ TEST_P(hiprand_kernel_h_philox4x32_10_poisson, hiprand_discrete)
 }
 
 INSTANTIATE_TEST_SUITE_P(hiprand_kernel_h_philox4x32_10_poisson,
-                        hiprand_kernel_h_philox4x32_10_poisson,
-                        ::testing::ValuesIn(lambdas));
+                         hiprand_kernel_h_philox4x32_10_poisson,
+                         ::testing::ValuesIn(lambdas));
 
-class hiprand_kernel_h_mrg32k3a_poisson : public ::testing::TestWithParam<double> { };
+class hiprand_kernel_h_mrg32k3a_poisson : public ::testing::TestWithParam<double>
+{
+};
 
 TEST_P(hiprand_kernel_h_mrg32k3a_poisson, hiprand_poisson)
 {
@@ -768,10 +738,12 @@ TEST_P(hiprand_kernel_h_mrg32k3a_poisson, hiprand_discrete)
 }
 
 INSTANTIATE_TEST_SUITE_P(hiprand_kernel_h_mrg32k3a_poisson,
-                        hiprand_kernel_h_mrg32k3a_poisson,
-                        ::testing::ValuesIn(lambdas));
+                         hiprand_kernel_h_mrg32k3a_poisson,
+                         ::testing::ValuesIn(lambdas));
 
-class hiprand_kernel_h_xorwow_poisson : public ::testing::TestWithParam<double> { };
+class hiprand_kernel_h_xorwow_poisson : public ::testing::TestWithParam<double>
+{
+};
 
 TEST_P(hiprand_kernel_h_xorwow_poisson, hiprand_poisson)
 {
@@ -786,10 +758,12 @@ TEST_P(hiprand_kernel_h_xorwow_poisson, hiprand_discrete)
 }
 
 INSTANTIATE_TEST_SUITE_P(hiprand_kernel_h_xorwow_poisson,
-                        hiprand_kernel_h_xorwow_poisson,
-                        ::testing::ValuesIn(lambdas));
+                         hiprand_kernel_h_xorwow_poisson,
+                         ::testing::ValuesIn(lambdas));
 
-class hiprand_kernel_h_default_poisson : public ::testing::TestWithParam<double> { };
+class hiprand_kernel_h_default_poisson : public ::testing::TestWithParam<double>
+{
+};
 
 TEST_P(hiprand_kernel_h_default_poisson, hiprand_poisson)
 {
@@ -804,5 +778,5 @@ TEST_P(hiprand_kernel_h_default_poisson, hiprand_discrete)
 }
 
 INSTANTIATE_TEST_SUITE_P(hiprand_kernel_h_default_poisson,
-                        hiprand_kernel_h_default_poisson,
-                        ::testing::ValuesIn(lambdas));
+                         hiprand_kernel_h_default_poisson,
+                         ::testing::ValuesIn(lambdas));

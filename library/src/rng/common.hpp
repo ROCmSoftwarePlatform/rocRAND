@@ -27,7 +27,7 @@
 
 #include <rocrand_common.h>
 
-template<class T, unsigned int N>
+template <class T, unsigned int N>
 struct alignas(sizeof(T) * N) aligned_vec_type
 {
     T data[N];

@@ -18,8 +18,8 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <stdio.h>
 #include <gtest/gtest.h>
+#include <stdio.h>
 
 #include <random>
 
@@ -27,24 +27,24 @@
 
 TEST(normal_distribution_tests, float_test)
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::random_device                          rd;
+    std::mt19937                                gen(rd());
     std::uniform_int_distribution<unsigned int> dis;
 
-    const size_t size = 4000;
-    float val[size];
+    const size_t               size = 4000;
+    float                      val[size];
     normal_distribution<float> u(2.0f, 5.0f);
 
     // Calculate mean
     float mean = 0.0f;
-    for(size_t i = 0; i < size; i+=2)
+    for(size_t i = 0; i < size; i += 2)
     {
         unsigned int input[2];
-        float output[2];
+        float        output[2];
         input[0] = dis(gen);
         input[1] = dis(gen);
         u(input, output);
-        val[i] = output[0];
+        val[i]     = output[0];
         val[i + 1] = output[1];
         mean += output[0] + output[1];
     }
@@ -64,26 +64,26 @@ TEST(normal_distribution_tests, float_test)
 
 TEST(normal_distribution_tests, double_test)
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::random_device                          rd;
+    std::mt19937                                gen(rd());
     std::uniform_int_distribution<unsigned int> dis;
 
-    const size_t size = 4000;
-    double val[size];
+    const size_t                size = 4000;
+    double                      val[size];
     normal_distribution<double> u(2.0, 5.0);
 
     // Calculate mean
     double mean = 0.0;
-    for(size_t i = 0; i < size; i+=2)
+    for(size_t i = 0; i < size; i += 2)
     {
         unsigned int input[4];
-        double output[2];
+        double       output[2];
         input[0] = dis(gen);
         input[1] = dis(gen);
         input[2] = dis(gen);
         input[3] = dis(gen);
         u(input, output);
-        val[i] = output[0];
+        val[i]     = output[0];
         val[i + 1] = output[1];
         mean += output[0] + output[1];
     }
@@ -103,23 +103,23 @@ TEST(normal_distribution_tests, double_test)
 
 TEST(normal_distribution_tests, half_test)
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::random_device                          rd;
+    std::mt19937                                gen(rd());
     std::uniform_int_distribution<unsigned int> dis;
 
-    const size_t size = 4000;
-    half val[size];
+    const size_t              size = 4000;
+    half                      val[size];
     normal_distribution<half> u(2.0f, 5.0f);
 
     // Calculate mean
     float mean = 0.0f;
-    for(size_t i = 0; i < size; i+=2)
+    for(size_t i = 0; i < size; i += 2)
     {
         unsigned int input[1];
-        half output[2];
+        half         output[2];
         input[0] = dis(gen);
         u(input, output);
-        val[i] = output[0];
+        val[i]     = output[0];
         val[i + 1] = output[1];
         mean += __half2float(output[0]) + __half2float(output[1]);
     }
@@ -139,24 +139,24 @@ TEST(normal_distribution_tests, half_test)
 
 TEST(mrg_normal_distribution_tests, float_test)
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::random_device                          rd;
+    std::mt19937                                gen(rd());
     std::uniform_int_distribution<unsigned int> dis(1, ROCRAND_MRG32K3A_M1);
 
-    const size_t size = 4000;
-    float val[size];
+    const size_t                   size = 4000;
+    float                          val[size];
     mrg_normal_distribution<float> u(2.0f, 5.0f);
 
     // Calculate mean
     float mean = 0.0f;
-    for(size_t i = 0; i < size; i+=2)
+    for(size_t i = 0; i < size; i += 2)
     {
         unsigned int input[2];
-        float output[2];
+        float        output[2];
         input[0] = dis(gen);
         input[1] = dis(gen);
         u(input, output);
-        val[i] = output[0];
+        val[i]     = output[0];
         val[i + 1] = output[1];
         mean += output[0] + output[1];
     }
@@ -176,24 +176,24 @@ TEST(mrg_normal_distribution_tests, float_test)
 
 TEST(mrg_normal_distribution_tests, double_test)
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::random_device                          rd;
+    std::mt19937                                gen(rd());
     std::uniform_int_distribution<unsigned int> dis(1, ROCRAND_MRG32K3A_M1);
 
-    const size_t size = 4000;
-    double val[size];
+    const size_t                    size = 4000;
+    double                          val[size];
     mrg_normal_distribution<double> u(2.0, 5.0);
 
     // Calculate mean
     double mean = 0.0;
-    for(size_t i = 0; i < size; i+=2)
+    for(size_t i = 0; i < size; i += 2)
     {
         unsigned int input[2];
-        double output[2];
+        double       output[2];
         input[0] = dis(gen);
         input[1] = dis(gen);
         u(input, output);
-        val[i] = output[0];
+        val[i]     = output[0];
         val[i + 1] = output[1];
         mean += output[0] + output[1];
     }
@@ -213,23 +213,23 @@ TEST(mrg_normal_distribution_tests, double_test)
 
 TEST(mrg_normal_distribution_tests, half_test)
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::random_device                          rd;
+    std::mt19937                                gen(rd());
     std::uniform_int_distribution<unsigned int> dis(1, ROCRAND_MRG32K3A_M1);
 
-    const size_t size = 4000;
-    half val[size];
+    const size_t                  size = 4000;
+    half                          val[size];
     mrg_normal_distribution<half> u(2.0f, 5.0f);
 
     // Calculate mean
     float mean = 0.0f;
-    for(size_t i = 0; i < size; i+=2)
+    for(size_t i = 0; i < size; i += 2)
     {
         unsigned int input[1];
-        half output[2];
+        half         output[2];
         input[0] = dis(gen);
         u(input, output);
-        val[i] = output[0];
+        val[i]     = output[0];
         val[i + 1] = output[1];
         mean += __half2float(output[0]) + __half2float(output[1]);
     }
@@ -249,23 +249,23 @@ TEST(mrg_normal_distribution_tests, half_test)
 
 TEST(sobol_normal_distribution_tests, float_test)
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::random_device                          rd;
+    std::mt19937                                gen(rd());
     std::uniform_int_distribution<unsigned int> dis;
 
-    const size_t size = 4000;
-    float val[size];
+    const size_t                     size = 4000;
+    float                            val[size];
     sobol_normal_distribution<float> u(2.0f, 5.0f);
 
     // Calculate mean
     float mean = 0.0f;
-    for(size_t i = 0; i < size; i+=1)
+    for(size_t i = 0; i < size; i += 1)
     {
         unsigned int input[1];
-        float output[1];
-        input[0] = dis(gen);
+        float        output[1];
+        input[0]  = dis(gen);
         output[0] = u(input[0]);
-        val[i] = output[0];
+        val[i]    = output[0];
         mean += output[0];
     }
     mean = mean / size;
@@ -284,23 +284,23 @@ TEST(sobol_normal_distribution_tests, float_test)
 
 TEST(sobol_normal_distribution_tests, double_test)
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::random_device                          rd;
+    std::mt19937                                gen(rd());
     std::uniform_int_distribution<unsigned int> dis;
 
-    const size_t size = 4000;
-    double val[size];
+    const size_t                      size = 4000;
+    double                            val[size];
     sobol_normal_distribution<double> u(2.0, 5.0);
 
     // Calculate mean
     double mean = 0.0;
-    for(size_t i = 0; i < size; i+=1)
+    for(size_t i = 0; i < size; i += 1)
     {
         unsigned int input[1];
-        double output[1];
-        input[0] = dis(gen);
+        double       output[1];
+        input[0]  = dis(gen);
         output[0] = u(input[0]);
-        val[i] = output[0];
+        val[i]    = output[0];
         mean += output[0];
     }
     mean = mean / size;
@@ -319,23 +319,23 @@ TEST(sobol_normal_distribution_tests, double_test)
 
 TEST(sobol_normal_distribution_tests, half_test)
 {
-    std::random_device rd;
-    std::mt19937 gen(rd());
+    std::random_device                          rd;
+    std::mt19937                                gen(rd());
     std::uniform_int_distribution<unsigned int> dis;
 
-    const size_t size = 4000;
-    half val[size];
+    const size_t                    size = 4000;
+    half                            val[size];
     sobol_normal_distribution<half> u(2.0f, 5.0f);
 
     // Calculate mean
     float mean = 0.0f;
-    for(size_t i = 0; i < size; i+=1)
+    for(size_t i = 0; i < size; i += 1)
     {
         unsigned int input[1];
-        half output[1];
-        input[0] = dis(gen);
+        half         output[1];
+        input[0]  = dis(gen);
         output[0] = u(input[0]);
-        val[i] = output[0];
+        val[i]    = output[0];
         mean += __half2float(output[0]);
     }
     mean = mean / size;

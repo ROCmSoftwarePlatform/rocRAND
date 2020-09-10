@@ -18,50 +18,41 @@
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 // THE SOFTWARE.
 
-#include <stdio.h>
 #include <gtest/gtest.h>
+#include <stdio.h>
 
 #include <hip/hip_runtime.h>
 #include <rocrand.h>
 
 #include "test_common.hpp"
 
-class rocrand_generate_normal_tests : public ::testing::TestWithParam<rocrand_rng_type> { };
+class rocrand_generate_normal_tests : public ::testing::TestWithParam<rocrand_rng_type>
+{
+};
 
 TEST_P(rocrand_generate_normal_tests, float_test)
 {
     const rocrand_rng_type rng_type = GetParam();
 
     rocrand_generator generator;
-    ROCRAND_CHECK(
-        rocrand_create_generator(
-            &generator,
-            rng_type
-        )
-    );
+    ROCRAND_CHECK(rocrand_create_generator(&generator, rng_type));
 
-    const size_t size = 12563;
-    float mean = 5.0f;
-    float stddev = 2.0f;
-    float * data;
-    HIP_CHECK(hipMalloc((void **)&data, size * sizeof(float)));
+    const size_t size   = 12563;
+    float        mean   = 5.0f;
+    float        stddev = 2.0f;
+    float*       data;
+    HIP_CHECK(hipMalloc((void**)&data, size * sizeof(float)));
     HIP_CHECK(hipDeviceSynchronize());
 
     // Any sizes
-    ROCRAND_CHECK(
-        rocrand_generate_normal(generator, data, 1, mean, stddev)
-    );
+    ROCRAND_CHECK(rocrand_generate_normal(generator, data, 1, mean, stddev));
     HIP_CHECK(hipDeviceSynchronize());
 
     // Any alignment
-    ROCRAND_CHECK(
-        rocrand_generate_normal(generator, data+1, 2, mean, stddev)
-    );
+    ROCRAND_CHECK(rocrand_generate_normal(generator, data + 1, 2, mean, stddev));
     HIP_CHECK(hipDeviceSynchronize());
 
-    ROCRAND_CHECK(
-        rocrand_generate_normal(generator, data, size, mean, stddev)
-    );
+    ROCRAND_CHECK(rocrand_generate_normal(generator, data, size, mean, stddev));
     HIP_CHECK(hipDeviceSynchronize());
 
     HIP_CHECK(hipFree(data));
@@ -73,35 +64,24 @@ TEST_P(rocrand_generate_normal_tests, double_test)
     const rocrand_rng_type rng_type = GetParam();
 
     rocrand_generator generator;
-    ROCRAND_CHECK(
-        rocrand_create_generator(
-            &generator,
-            rng_type
-        )
-    );
+    ROCRAND_CHECK(rocrand_create_generator(&generator, rng_type));
 
-    const size_t size = 12563;
-    double mean = 5.0;
-    double stddev = 2.0;
-    double * data;
-    HIP_CHECK(hipMalloc((void **)&data, size * sizeof(double)));
+    const size_t size   = 12563;
+    double       mean   = 5.0;
+    double       stddev = 2.0;
+    double*      data;
+    HIP_CHECK(hipMalloc((void**)&data, size * sizeof(double)));
     HIP_CHECK(hipDeviceSynchronize());
 
     // Any sizes
-    ROCRAND_CHECK(
-        rocrand_generate_normal_double(generator, data, 1, mean, stddev)
-    );
+    ROCRAND_CHECK(rocrand_generate_normal_double(generator, data, 1, mean, stddev));
     HIP_CHECK(hipDeviceSynchronize());
 
     // Any alignment
-    ROCRAND_CHECK(
-        rocrand_generate_normal_double(generator, data+1, 2, mean, stddev)
-    );
+    ROCRAND_CHECK(rocrand_generate_normal_double(generator, data + 1, 2, mean, stddev));
     HIP_CHECK(hipDeviceSynchronize());
 
-    ROCRAND_CHECK(
-        rocrand_generate_normal_double(generator, data, size, mean, stddev)
-    );
+    ROCRAND_CHECK(rocrand_generate_normal_double(generator, data, size, mean, stddev));
     HIP_CHECK(hipDeviceSynchronize());
 
     HIP_CHECK(hipFree(data));
@@ -113,35 +93,24 @@ TEST_P(rocrand_generate_normal_tests, half_test)
     const rocrand_rng_type rng_type = GetParam();
 
     rocrand_generator generator;
-    ROCRAND_CHECK(
-        rocrand_create_generator(
-            &generator,
-            rng_type
-        )
-    );
+    ROCRAND_CHECK(rocrand_create_generator(&generator, rng_type));
 
-    const size_t size = 12563;
-    half mean = 5.0f;
-    half stddev = 2.0f;
-    half * data;
-    HIP_CHECK(hipMalloc((void **)&data, size * sizeof(half)));
+    const size_t size   = 12563;
+    half         mean   = 5.0f;
+    half         stddev = 2.0f;
+    half*        data;
+    HIP_CHECK(hipMalloc((void**)&data, size * sizeof(half)));
     HIP_CHECK(hipDeviceSynchronize());
 
     // Any sizes
-    ROCRAND_CHECK(
-        rocrand_generate_normal_half(generator, data, 1, mean, stddev)
-    );
+    ROCRAND_CHECK(rocrand_generate_normal_half(generator, data, 1, mean, stddev));
     HIP_CHECK(hipDeviceSynchronize());
 
     // Any alignment
-    ROCRAND_CHECK(
-        rocrand_generate_normal_half(generator, data+1, 2, mean, stddev)
-    );
+    ROCRAND_CHECK(rocrand_generate_normal_half(generator, data + 1, 2, mean, stddev));
     HIP_CHECK(hipDeviceSynchronize());
 
-    ROCRAND_CHECK(
-        rocrand_generate_normal_half(generator, data, size, mean, stddev)
-    );
+    ROCRAND_CHECK(rocrand_generate_normal_half(generator, data, size, mean, stddev));
     HIP_CHECK(hipDeviceSynchronize());
 
     HIP_CHECK(hipFree(data));
@@ -150,18 +119,16 @@ TEST_P(rocrand_generate_normal_tests, half_test)
 
 TEST(rocrand_generate_normal_tests, neg_test)
 {
-    const size_t size = 256;
-    float mean = 5.0;
-    float stddev = 2.0;
-    float * data = NULL;
+    const size_t size   = 256;
+    float        mean   = 5.0;
+    float        stddev = 2.0;
+    float*       data   = NULL;
 
     rocrand_generator generator = NULL;
-    EXPECT_EQ(
-        rocrand_generate_normal(generator, (float *) data, size, mean, stddev),
-        ROCRAND_STATUS_NOT_CREATED
-    );
+    EXPECT_EQ(rocrand_generate_normal(generator, (float*)data, size, mean, stddev),
+              ROCRAND_STATUS_NOT_CREATED);
 }
 
 INSTANTIATE_TEST_SUITE_P(rocrand_generate_normal_tests,
-                        rocrand_generate_normal_tests,
-                        ::testing::ValuesIn(rng_types));
+                         rocrand_generate_normal_tests,
+                         ::testing::ValuesIn(rng_types));
